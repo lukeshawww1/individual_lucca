@@ -7,11 +7,11 @@ import pytz  # Para trabajar con zonas horarias
 # Establece la zona horaria a 'Europe/Madrid', esto finalmente no lo uso ya que tengo que introducir la hora de la raspberry manualmente porque se queda el día y la hora del último acceso
 zona_horaria = pytz.timezone('Europe/Madrid')
 
-# Conecta con la base de datos SQLite
+# Conecta con la base de datos SQLite3
 conn = sqlite3.connect('/home/Lucca/projecte/accesscontrol/access_logs.db')
 cursor = conn.cursor()
 
-# Configura la conexión serie con el Arduino
+# Configura la conexión serie con el Arduino, eL puerto puede ir cambiando ya que cada vez que desconecto y conecto la arduino, tengo que hacer un l /dev/tty* para saber el puerto exacto.
 ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1) 
 
 print("[INFO] Llegint dades de l'Arduino...")  # Mensaje de inicio
@@ -41,21 +41,21 @@ while True:
                 conn.commit()  # Guarda los cambios en la base de datos
                 print(f"[ACCESS] {timestamp} - {nombre} ({uid}) - {estado}")
 
-        # Procesa los datos de temperatura y humedad
+        # procesa los datos de temperatura y humedad
         elif linea.startswith("T°C:"):
             match = re.search(r"T°C:\s*(\d+(?:\.\d+)?)\s+Humitat:\s*(\d+(?:\.\d+)?)%", linea)
             if match:
                 temperatura = float(match.group(1))
                 humedad = float(match.group(2))
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                # Inserta los datos en la tabla 'temps'
+                # inserta los datos en la tabla 'temps' de la bbdd acces.logs.db
                 cursor.execute(
                     "INSERT INTO temps (temperatura, humitat, timestamp) VALUES (?, ?, ?)",
                     (temperatura, humedad, timestamp)
                 )
                 conn.commit()  # Guarda los cambios en la base de datos
-                print(f"[TEMP] {timestamp} - {temperatura}°C / {humedad}%")
+                print(f"[TEMP] {timestamp} - {temperatura}°C / {humedad}%") #Información que se imprime
 
     except Exception as e:
-        # Captura y muestra cualquier error ocurrido
+        # captura y muestra cualquier error ocurrido
         print(f"[ERROR] {e}")
