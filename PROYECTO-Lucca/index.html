@@ -125,13 +125,13 @@
 
   <!-- Sección Luces -->
   <div id="luces" class="seccion">
-    <h2>💡 Control de Luces (Comedor)</h2>
-    <button class="boton" onclick="controlarLuz('comedor', 'encender')">Encender Comedor</button>
-    <button class="boton" onclick="controlarLuz('comedor', 'apagar')">Apagar Comedor</button>
+    <h2>💡 Control de Luces (Clase)</h2>
+    <button class="boton" onclick="controlarLuz('comedor', 'encender')">Encender</button>
+    <button class="boton" onclick="controlarLuz('comedor', 'apagar')">Apagar</button>
     <br><button class="volver" onclick="volverInicio()">↩ Volver</button>
   </div>
 
-  <!-- Sección Accesos -->
+  <!-- Sección Accesos Todo esto se cogen los datos de flask y de publican en la web grupal -->
   <div id="accesos" class="seccion">
     <h2>🛂 Últimos Accesos</h2>
     <table>
@@ -143,7 +143,7 @@
     <br><button class="volver" onclick="volverInicio()">↩ Volver</button>
   </div>
 
-  <!-- Sección Temperatura -->
+  <!-- Sección Temperatura Lo mismo, se cogen los datos del flask y se publican a la web y se van actualizando -->
   <div id="temperatura" class="seccion">
     <h2>🌡️ Temperatura Actual</h2>
     <p id="datosTemp" class="temp-humedad">Cargando...</p>
@@ -151,6 +151,7 @@
   </div>
 
   <script>
+    //Esta parte lo he hecho con IA y videos ya que no he hecho nunca JS y se me complica pero simplemente es para llamar a las funciones tanto de volver al menú principal como todos los botones
     // Muestra la sección deseada
     function mostrarSeccion(id) {
       document.getElementById('inicio').style.display = 'none';
@@ -164,14 +165,14 @@
       document.querySelectorAll('.seccion').forEach(sec => sec.classList.remove('activa'));
     }
 
-    // Función para controlar luces mediante API, usa el script controlluces.py
+    // Función para controlar luces mediante flask (comentado ya anteriormente), usa el script controlluces.py
     function controlarLuz(habitacion, accion) {
       fetch(`http://192.168.1.18:5000/${accion}/${habitacion}`, { method: 'POST' })
         .then(res => res.json())
         .then(data => console.log(data));
     }
 
-    // Función para actualizar accesos recientes,  coge los datos del servidor flask donde se van actualizando los datos
+    // Función para actualizar accesos recientes,  coge los datos del servidor flask donde se van actualizando los datos y se publican en la web
     function actualizarAccesos() {
       fetch('http://192.168.1.18:5000/ultimos_accesos')
         .then(res => res.json())
