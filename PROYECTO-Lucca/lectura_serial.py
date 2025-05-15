@@ -4,7 +4,7 @@ from datetime import datetime  # Para obtener la fecha y hora actual
 import re  # Para trabajar con expresiones regulares
 import pytz  # Para trabajar con zonas horarias
 
-# Establece la zona horaria a 'Europe/Madrid'
+# Establece la zona horaria a 'Europe/Madrid', esto finalmente no lo uso ya que tengo que introducir la hora de la raspberry manualmente porque se queda el día y la hora del último acceso
 zona_horaria = pytz.timezone('Europe/Madrid')
 
 # Conecta con la base de datos SQLite
@@ -12,7 +12,7 @@ conn = sqlite3.connect('/home/Lucca/projecte/accesscontrol/access_logs.db')
 cursor = conn.cursor()
 
 # Configura la conexión serie con el Arduino
-ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1) 
 
 print("[INFO] Llegint dades de l'Arduino...")  # Mensaje de inicio
 
