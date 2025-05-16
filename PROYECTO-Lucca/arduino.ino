@@ -1,9 +1,9 @@
-#include <SPI.h>             // Librería para comunicación SPI (necesaria para el lector RFID)
+#include <SPI.h>             // Librería para comunicación SPI (para el RFID)
 #include <MFRC522.h>         // Librería para el módulo lector RFID RC522
-#include <Servo.h>           // Librería para controlar servos
+#include <Servo.h>           // Librería para controlar servo, esto lo tengo para mi implementación en casa
 #include <DHT.h>             // Librería para sensores DHT (temperatura y humedad)
 
-// --- Definiciones de pines ---
+// Definición de pines
 
 #define SS_PIN 10            // Pin SS del RFID
 #define RST_PIN 9            // Pin de reset del RFID
@@ -11,16 +11,16 @@
 #define DHTPIN 2             // Pin de datos del sensor DHT11
 #define DHTTYPE DHT11        // Tipo de sensor (DHT11)
 
-#define RED_LED 5            // Pin del LED rojo (acceso denegado)
-#define GREEN_LED 6          // Pin del LED verde (acceso concedido)
+#define RED_LED 5            // Pin del LED rojo (acceso denegado), NO está implementado, faltan resisténcias
+#define GREEN_LED 6          // Pin del LED verde (acceso concedido), NO está implementado, faltan resisténcias
 
 #define SERVO_PIN 3          // Pin del servo (cerradura) - De esto tengo que comentar que al final no he usado el servo ya que no tenía el como probarlo en la expo de clase. Por si sirve, en mi casa lo estoy empezando a implementar en un armario de la comunidad que tengo en mi piso. 
 
-// --- Inicialización de objetos ---
+// Inicialización de objetos 
 
 MFRC522 rfid(SS_PIN, RST_PIN);  // Objeto para controlar el lector RFID
 DHT dht(DHTPIN, DHTTYPE);       // Objeto para leer el sensor DHT
-Servo lockServo;                // Objeto para controlar el servo
+Servo lockServo;                // Objeto para controlar el servo que, vuelvo a repetir, NO lo he usado para el proyecto
 
 // --- Variables de estado de la cerradura --- (está en caso de que lo hubiese hecho y para dejarlo implementado ya para mi casa)
 
@@ -34,12 +34,12 @@ String accessGranted[] = {"3025517163", "19612012715"};  // UID de tarjetas perm
 String nomsUsuaris[] = {"Lucca", "Arnau"};               // Nombres correspondientes
 int accessGrantedSize = 2;                               // Número de usuarios
 
-// --- Temporizador para lectura de temperatura ---
+// Temporizador para lectura de temperatura
 
 unsigned long lastTempRead = 0;              // Último tiempo de lectura de temperatura
 const unsigned long tempInterval = 10000;    // Intervalo de lectura (10 segundos para que esté actualizado)
 
-// --- Función setup: configuración inicial ---
+// Función setup: configuración inicial
 
 void setup() {
   Serial.begin(9600);           // Inicia comunicación serie
@@ -56,10 +56,10 @@ void setup() {
   Serial.println("Sistema inicialitzat: RFID + Temperatura");  // Mensaje de inicio
 }
 
-// --- Función loop: se repite constantemente ---
+// Función loop: se repite constantemente
 
 void loop() {
-  // --- Parte 1: Lectura RFID ---
+  // Parte 1: Lectura RFID
   if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
     String temp = "";
     for (byte i = 0; i < rfid.uid.size; i++) {
@@ -69,13 +69,13 @@ void loop() {
     rfid.PICC_HaltA();  // Detiene la comunicación con la tarjeta
   }
 
-  // --- Parte 2: Lectura de temperatura/humedad ---
+  // Parte 2: Lectura de temperatura/humedad
   unsigned long now = millis();
   if (now - lastTempRead > tempInterval) {
     lastTempRead = now;
     float h = dht.readHumidity();        // Lee humedad
     float t = dht.readTemperature();     // Lee temperatura
-    if (!isnan(h) && !isnan(t)) {        // Verifica si son valores válidos
+    if (!isnan(h) && !isnan(t)) {        // Verifica si son valores válidos y los imprime en la terminal
       Serial.print("TºC: ");
       Serial.print(t);
       Serial.print("º  Humitat: ");
@@ -85,7 +85,7 @@ void loop() {
   }
 }
 
-// --- Verifica si el UID recibido tiene acceso ---
+// Verifica si el UID recibido tiene acceso
 
 void checkAccess(String temp) {
   boolean granted = false;
@@ -115,7 +115,7 @@ void checkAccess(String temp) {
   }
 }
 
-// --- Cambia entre abrir y cerrar la cerradura (lo mismo de antes, de momento no lo he implementado, lo dejo para cuando lo haga en mi casa) ---
+// Cambia entre abrir y cerrar la cerradura (lo mismo de antes, de momento no lo he implementado, lo dejo para cuando lo haga en mi casa)
 
 void toggleLock() {
   if (locked) {
@@ -127,7 +127,7 @@ void toggleLock() {
   }
 }
 
-// --- Parpadea un LED 3 veces (verde o rojo) ---
+// Parpadea un LED 3 veces (verde o rojo)
 
 void blinkLED(int ledPin) {
   for (int i = 0; i < 3; i++) {
